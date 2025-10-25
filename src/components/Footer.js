@@ -5,7 +5,7 @@ function Footer() {
   const myEmail = "2400080042@kluniversity.in";
   const myLinkedIn = "https://www.linkedin.com/in/gowrishanker-bhonagiri-552362360";
   // IMPORTANT: Replace this with your actual GitHub profile URL
-  const myGitHub = "https://github.com/your-github-username"; 
+  const myGitHub = "https://github.com/shanker566"; 
   const currentYear = new Date().getFullYear();
 
   // Reusable style for links (keeping minimal inline styles for margin)
@@ -40,7 +40,7 @@ function Footer() {
 
       {/* Tagline / Credit */}
       <p className="footer-tagline" style={{ margin: "5px 0" }}>
-        Built with ❤️ using React by <strong>Gowrishanker Bhonagiri</strong>, KL University
+        Built with ❤️ using React by <strong>Gowrishanker Bhonagiri</strong>, KL University student
       </p>
 
       {/* Legal + Year */}
