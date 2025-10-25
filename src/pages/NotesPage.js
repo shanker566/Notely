@@ -7,22 +7,23 @@ function NotesPage() {
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { yearId, subjectId } = useParams(); // Gets year and subject from URL
+  const { yearId, subjectId } = useParams(); 
 
   useEffect(() => {
     const fetchNotes = async () => {
       try {
         setLoading(true);
-        // --- MODIFIED: Select the new 'note_type' column ---
+        // --- MODIFIED: Select the new 'course_outcome' column ---
         const { data, error } = await supabase
           .from('notes')
-          .select('id, file_name, url, note_type') // <-- Add note_type here
+          // Select all needed columns
+          .select('id, file_name, url, note_type, course_outcome') 
           .eq('year', yearId)
           .eq('subject', subjectId);
         // --- END MODIFICATION ---
 
         if (error) throw error;
-        setNotes(data || []); // Ensure notes is always an array
+        setNotes(data || []); 
 
       } catch (err) {
         console.error(err);
@@ -33,15 +34,29 @@ function NotesPage() {
     };
 
     fetchNotes();
-  }, [yearId, subjectId]); // Re-run if year or subject changes
+  }, [yearId, subjectId]); 
 
   if (loading) return <h2>Loading notes...</h2>;
   if (error) return <h2 style={{ color: 'red' }}>{error}</h2>;
 
-  // --- NEW: Filter notes into categories ---
-  const classNotes = notes.filter(note => note.note_type === 'Class Notes' || !note.note_type); // Default to class notes if type is missing
+  // --- MODIFIED: Group notes by type AND course outcome ---
   const labNotes = notes.filter(note => note.note_type === 'Lab Notes');
-  // --- END NEW ---
+  
+  // Group Class Notes by Course Outcome
+  const classNotesGrouped = notes
+    .filter(note => note.note_type === 'Class Notes' || !note.note_type) // Include notes without a type yet
+    .reduce((acc, note) => {
+      const co = note.course_outcome || 'Uncategorized'; // Group notes without CO under 'Uncategorized'
+      if (!acc[co]) {
+        acc[co] = [];
+      }
+      acc[co].push(note);
+      return acc;
+    }, {});
+    
+  // Get sorted CO keys (e.g., CO1, CO2, Uncategorized)
+  const coKeys = Object.keys(classNotesGrouped).sort(); 
+  // --- END MODIFICATION ---
 
   return (
     <div className="page-wrapper">
@@ -50,19 +65,27 @@ function NotesPage() {
       </Link>
       <h1>{subjectId} Notes</h1>
 
-      {/* --- NEW: Render notes grouped by type --- */}
       {notes.length > 0 ? (
         <div>
-          {classNotes.length > 0 && (
+          {/* --- MODIFIED: Render Class Notes grouped by CO --- */}
+          {coKeys.length > 0 && (
             <section style={{ marginBottom: '2rem' }}>
               <h2>Class Notes</h2>
-              <div className="card-grid" style={{ gap: '10px' }}> {/* Smaller gap for notes list */}
-                {classNotes.map(note => (
-                  <NoteCard key={note.id} note={note} />
-                ))}
-              </div>
+              {coKeys.map(coKey => (
+                <div key={coKey} style={{ marginBottom: '1.5rem' }}>
+                  <h3 style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem', marginBottom: '1rem' }}>
+                    {coKey} {/* Display CO unit name */}
+                  </h3>
+                  <div className="card-grid" style={{ gap: '10px' }}>
+                    {classNotesGrouped[coKey].map(note => (
+                      <NoteCard key={note.id} note={note} />
+                    ))}
+                  </div>
+                </div>
+              ))}
             </section>
           )}
+          {/* --- END MODIFICATION --- */}
 
           {labNotes.length > 0 && (
             <section>
@@ -78,7 +101,6 @@ function NotesPage() {
       ) : (
         <p>No notes found for this subject.</p>
       )}
-      {/* --- END NEW --- */}
     </div>
   );
 }
