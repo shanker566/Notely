@@ -40,12 +40,12 @@ function Footer() {
 
       {/* Tagline / Credit */}
       <p className="footer-tagline" style={{ margin: "5px 0" }}>
-        Built with ❤️ using React by <strong>Gowrishanker Bhonagiri</strong>, KL University student
+        Built with ❤️ using React by <strong>Gowrishanker Bhonagiri</strong>, AIDS Department student KL University 
       </p>
 
       {/* Legal + Year */}
       <p className="footer-legal">
-        &copy; {currentYear} Notely App. All rights reserved. | 
+        &copy; {currentYear} Notely App. All rights reserved to owner. | 
         <a href="#" style={linkMarginStyle}> Privacy Policy</a> | {/* Placeholder */}
         <a href="#" style={linkMarginStyle}> Terms of Use</a> {/* Placeholder */}
       </p>
