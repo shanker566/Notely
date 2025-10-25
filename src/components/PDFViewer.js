@@ -1,54 +1,80 @@
 import React, { useState } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 
-// This line is REQUIRED by the react-pdf library
-// We'll use a reliable CDN for the worker
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+// Required setup line
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
 
 function PDFViewer({ fileUrl }) {
   const [numPages, setNumPages] = useState(null);
+  const [pageNumber, setPageNumber] = useState(1); // Start on page 1
 
   function onDocumentLoadSuccess({ numPages }) {
     setNumPages(numPages);
+    setPageNumber(1); // Reset to page 1 when new PDF loads
   }
 
-  // Styles for the container
-  const viewerStyle = {
-    border: '1px solid #ccc',
-    padding: '10px',
-    marginTop: '20px',
-    maxHeight: '80vh',
-    overflowY: 'auto',
-    background: '#f9f9f9',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center'
-  };
+  function changePage(offset) {
+    setPageNumber(prevPageNumber => prevPageNumber + offset);
+  }
+
+  function previousPage() {
+    if (pageNumber > 1) {
+      changePage(-1);
+    }
+  }
+
+  function nextPage() {
+    if (pageNumber < numPages) {
+      changePage(1);
+    }
+  }
 
   return (
-    <div style={viewerStyle}>
+    <div className="pdf-viewer-container">
       <Document
         file={fileUrl}
         onLoadSuccess={onDocumentLoadSuccess}
-        onLoadError={(error) => console.error('Error loading PDF:', error)}
-        loading="Loading PDF document..."
+        onLoadError={(error) => {
+          console.error('Error loading PDF:', error);
+          // Optionally display an error message to the user here
+        }}
+        // Add an explicit loading message
+        loading={"Loading PDF..."} 
       >
-        {/* This will render all pages of the PDF */}
-        {Array.from(new Array(numPages), (el, index) => (
-          <Page 
-            key={`page_${index + 1}`} 
-            pageNumber={index + 1}
-            width={800} // You can change this width
-            
-            // These two lines prevent the CSS errors
-            renderTextLayer={false}
-            renderAnnotationLayer={false}
-          />
-        ))}
+        {/* Only render the current page */}
+        <Page 
+           pageNumber={pageNumber} 
+           width={Math.min(window.innerWidth * 0.8, 800)} // Responsive width
+           renderTextLayer={false} // Disable text layer for performance
+           renderAnnotationLayer={false} // Disable annotation layer
+        />
       </Document>
+      
+      {/* Page Navigation Controls */}
+      {numPages && (
+        <div style={{ marginTop: '1rem', textAlign: 'center' }}>
+          <p>
+            Page {pageNumber || (numPages ? 1 : '--')} of {numPages || '--'}
+          </p>
+          <button
+            type="button"
+            disabled={pageNumber <= 1}
+            onClick={previousPage}
+            style={{ marginRight: '10px' }}
+          >
+            Previous
+          </button>
+          <button
+            type="button"
+            disabled={pageNumber >= numPages}
+            onClick={nextPage}
+          >
+            Next
+          </button>
+        </div>
+      )}
     </div>
   );
 }
 
 export default PDFViewer;
-
