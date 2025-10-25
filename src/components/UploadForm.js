@@ -5,9 +5,7 @@ function UploadForm() {
   const [files, setFiles] = useState([]); 
   const [year, setYear] = useState('');
   const [subject, setSubject] = useState('');
-  // --- NEW STATE for Note Type ---
-  const [noteType, setNoteType] = useState('Class Notes'); // Default to 'Class Notes'
-  // --- END NEW STATE ---
+  const [noteType, setNoteType] = useState('Class Notes'); 
   const [loading, setLoading] = useState(false);
   const [uploadStatus, setUploadStatus] = useState({ progress: 0, messages: [] }); 
 
@@ -21,10 +19,7 @@ function UploadForm() {
 
   const uploadSingleFile = async (file) => {
     try {
-      // Include noteType in the storage path for better organization (optional but good)
-      // Example path: public/Y24/Maths/Class Notes/lecture1.pdf
-      const filePath = `public/${year}/${subject}/${noteType}/${file.name}`; 
-      
+      const filePath = `public/${year}/${subject}/${noteType}/${file.name}`;       
       const { error: uploadError } = await supabase.storage
         .from('notes')
         .upload(filePath, file);
@@ -37,7 +32,6 @@ function UploadForm() {
         
       const publicURL = urlData.publicUrl;
 
-      // --- MODIFIED: Add note_type to the database insert ---
       const { error: dbError } = await supabase
         .from('notes')
         .insert({
@@ -45,9 +39,8 @@ function UploadForm() {
           subject: subject,
           file_name: file.name,
           url: publicURL,
-          note_type: noteType // Save the selected note type
+          note_type: noteType 
         });
-      // --- END MODIFICATION ---
 
       if (dbError) throw dbError;
 
@@ -60,7 +53,6 @@ function UploadForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Include noteType in validation
     if (files.length === 0 || !year || !subject || !noteType) { 
       setUploadStatus({ progress: 0, messages: ['Please fill in Year, Subject, Note Type, and select file(s).'] });
       return;
@@ -81,9 +73,13 @@ function UploadForm() {
     }
 
     setFiles([]);
+    // Clear the file input visually (requires accessing the DOM element)
+    if (document.getElementById('file-input')) {
+        document.getElementById('file-input').value = "";
+    }
     setYear('');
     setSubject('');
-    setNoteType('Class Notes'); // Reset note type
+    setNoteType('Class Notes'); 
     setLoading(false);
     setUploadStatus(prevStatus => ({ ...prevStatus, progress: 100 })); 
   };
@@ -100,25 +96,41 @@ function UploadForm() {
         <input type="text" value={subject} onChange={(e) => setSubject(e.target.value)} placeholder="e.g., Mathematics" required />
       </div>
       
-      {/* --- NEW DROPDOWN for Note Type --- */}
       <div>
         <label>Note Type: </label>
         <select value={noteType} onChange={(e) => setNoteType(e.target.value)} required style={{width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-primary)', color: 'var(--text-color)', fontSize: '1rem'}}>
           <option value="Class Notes">Class Notes</option>
           <option value="Lab Notes">Lab Notes</option>
-          {/* Add more options here if needed later */}
         </select>
       </div>
-      {/* --- END NEW DROPDOWN --- */}
 
       <div>
         <label>File(s) (PDF, PPT, PPTX): </label>
-        <input type="file" onChange={handleFileChange} accept=".pdf,.ppt,.pptx" multiple required />
+        {/* Added id for clearing */}
+        <input id="file-input" type="file" onChange={handleFileChange} accept=".pdf,.ppt,.pptx" multiple required />
       </div>
       
-      {loading && ( /* Progress Bar */ )}
-      <button type="submit" disabled={loading} style={{ marginTop: '1rem' }}>{ /* Upload Button */ }</button>
-      {uploadStatus.messages.length > 0 && ( /* Status Box */ )}
+      {/* --- CORRECTED JSX --- */}
+      {loading && (
+        <div style={{ marginTop: '1rem' }}>
+          <progress value={uploadStatus.progress} max="100" style={{ width: '100%' }} />
+          <p>{Math.round(uploadStatus.progress)}% Complete</p>
+        </div>
+      )}
+
+      <button type="submit" disabled={loading} style={{ marginTop: '1rem' }}>
+        {loading ? `Uploading ${files.length} file(s)...` : `Upload (${files.length} selected)`}
+      </button>
+
+      {uploadStatus.messages.length > 0 && !loading && ( // Show final status only when not loading
+        <div style={{ marginTop: '1rem', maxHeight: '200px', overflowY: 'auto', border: '1px solid var(--border-color)', padding: '10px', borderRadius: '8px' }}>
+          <h4>Upload Status:</h4>
+          {uploadStatus.messages.slice(1).map((msg, index) => ( // slice(1) to skip the "Starting upload..." message
+            <p key={index} style={{ color: msg.includes('Error:') ? 'red' : 'inherit', fontSize: '0.9em' }}>{msg}</p>
+          ))}
+        </div>
+      )}
+      {/* --- END CORRECTION --- */}
     </form>
   );
 }
