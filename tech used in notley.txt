@@ -1,0 +1,49 @@
+Notely Application - Technology Stack
+
+This document lists the core technologies, libraries, and services used to build the Notely application.
+
+== Frontend (Client-Side) ==
+
+React: JavaScript library for building the user interface.
+
+React Router: Library for handling page navigation within the React app.
+
+react-pdf: Library for displaying PDF documents in the browser.
+
+HTML: Standard markup language for web pages.
+
+CSS: Used for styling the application, including layout, colors, and the dark/light theme (using CSS Variables).
+
+JavaScript (ES6+): The programming language used for React and browser interactions.
+
+== Backend (Server-Side & Data) ==
+
+Supabase: Backend-as-a-Service platform providing:
+
+Supabase Auth: User authentication (Google Sign-In).
+
+Supabase Database (PostgreSQL): Relational database for storing note metadata.
+
+Row Level Security (RLS): Database security rules.
+
+Supabase Storage: Cloud storage for hosting PDF/PPT/PPTX files.
+
+== Development & Deployment ==
+
+Node.js: JavaScript runtime environment.
+
+npm: Node Package Manager (for installing libraries).
+
+create-react-app (react-scripts): Toolchain for initializing and running the React project.
+
+Git: Version control system for tracking code changes.
+
+GitHub: Platform for hosting the Git repository online.
+
+Vercel: Platform for deploying and hosting the live React application.
+
+Vercel Analytics: Used for tracking website visitors and performance (via @vercel/analytics).
+
+== External Services ==
+
+Google Cloud Platform: Used only to generate OAuth credentials (Client ID/Secret) for Google Sign-In integration with Supabase Auth.

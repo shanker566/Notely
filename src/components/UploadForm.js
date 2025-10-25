@@ -74,7 +74,6 @@ function UploadForm() {
     }
 
     setLoading(true);
-    // Clear previous messages before starting new upload
     setUploadStatus({ progress: 0, messages: [`Starting upload of ${files.length} file(s)...`] }); 
 
     const results = [];
@@ -82,15 +81,12 @@ function UploadForm() {
         const file = files[i];
         const result = await uploadSingleFile(file);
         results.push(result);
-        // Update status incrementally
         setUploadStatus(prevStatus => ({
             progress: ((i + 1) / files.length) * 100,
-            // Add new message, keeping existing ones
             messages: [...prevStatus.messages, `${result.fileName}: ${result.message}`] 
         }));
     }
 
-    // Reset form fields
     setFiles([]);
     if (document.getElementById('file-input')) document.getElementById('file-input').value = "";
     setYear('');
@@ -98,7 +94,6 @@ function UploadForm() {
     setNoteType('Class Notes'); 
     setCourseOutcome(''); 
     setLoading(false); 
-    // Keep progress at 100, but allow status messages to show by setting loading to false
     setUploadStatus(prevStatus => ({ ...prevStatus, progress: 100 })); 
   };
 
@@ -131,18 +126,25 @@ function UploadForm() {
             onChange={(e) => setCourseOutcome(e.target.value)} 
             placeholder="e.g., CO1, CO2" 
             required 
-            style={{width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-primary)', color: 'var(--text-color)', fontSize: '1rem'}} // Added styles
+            style={{width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-primary)', color: 'var(--text-color)', fontSize: '1rem'}}
           />
         </div>
       )}
 
       <div>
-        <label>File(s) (PDF, PPT, PPTX): </label>
-        <input id="file-input" type="file" onChange={handleFileChange} accept=".pdf,.ppt,.pptx" multiple required />
+        {/* MODIFIED: Update label and accept attribute */}
+        <label>File(s) (PDF, PPT, PPTX, DOC, DOCX): </label> 
+        <input 
+          id="file-input" 
+          type="file" 
+          onChange={handleFileChange} 
+          accept=".pdf,.ppt,.pptx,.doc,.docx" // <-- Added .doc and .docx
+          multiple 
+          required 
+        />
+        {/* END MODIFICATION */}
       </div>
       
-      {/* --- CORRECTED JSX FOR FEEDBACK --- */}
-      {/* Progress Bar - Show only during loading */}
       {loading && (
         <div style={{ marginTop: '1rem' }}>
           <progress value={uploadStatus.progress} max="100" style={{ width: '100%' }} />
@@ -150,22 +152,18 @@ function UploadForm() {
         </div>
       )}
 
-      {/* Upload Button - Text changes based on loading state */}
       <button type="submit" disabled={loading} style={{ marginTop: '1rem' }}>
         {loading ? `Uploading ${files.length} file(s)...` : `Upload (${files.length > 0 ? files.length : 0} selected)`}
       </button>
 
-      {/* Status Box - Show final messages only AFTER loading is false */}
       {uploadStatus.messages.length > 0 && !loading && ( 
         <div style={{ marginTop: '1rem', maxHeight: '200px', overflowY: 'auto', border: '1px solid var(--border-color)', padding: '10px', borderRadius: '8px', backgroundColor: 'var(--bg-primary)' }}>
           <h4>Upload Status:</h4>
-          {/* Skip the initial "Starting upload..." message */}
           {uploadStatus.messages.slice(1).map((msg, index) => ( 
             <p key={index} style={{ color: msg.includes('Error:') ? 'red' : 'inherit', fontSize: '0.9em', marginBottom: '0.2em' }}>{msg}</p>
           ))}
         </div>
       )}
-      {/* --- END CORRECTION --- */}
     </form>
   );
 }
