@@ -6,14 +6,11 @@ function UploadForm() {
   const [year, setYear] = useState('');
   const [subject, setSubject] = useState('');
   const [noteType, setNoteType] = useState('Class Notes'); 
-  // --- NEW STATE for Course Outcome ---
-  const [courseOutcome, setCourseOutcome] = useState(''); // Store CO unit (CO1, etc.)
-  // --- END NEW STATE ---
+  const [courseOutcome, setCourseOutcome] = useState(''); 
   const [loading, setLoading] = useState(false);
   const [uploadStatus, setUploadStatus] = useState({ progress: 0, messages: [] }); 
 
   const handleFileChange = (e) => {
-    // ... (keep existing code) ...
     if (e.target.files && e.target.files.length > 0) {
       setFiles(Array.from(e.target.files)); 
     } else {
@@ -23,15 +20,11 @@ function UploadForm() {
 
   const uploadSingleFile = async (file) => {
     try {
-      // --- MODIFIED: Include Course Outcome in path if it's Class Notes ---
       let coPathPart = '';
       if (noteType === 'Class Notes' && courseOutcome) {
-          coPathPart = `${courseOutcome}/`; // Add CO folder like CO1/
+          coPathPart = `${courseOutcome}/`; 
       }
-      // Example path: public/Y24/Maths/Class Notes/CO1/lecture1.pdf 
-      // Example path: public/Y24/Maths/Lab Notes/lab1.pdf (no CO path)
       const filePath = `public/${year}/${subject}/${noteType}/${coPathPart}${file.name}`; 
-      // --- END MODIFICATION ---
       
       const { error: uploadError } = await supabase.storage
         .from('notes')
@@ -45,7 +38,6 @@ function UploadForm() {
         
       const publicURL = urlData.publicUrl;
 
-      // --- MODIFIED: Add course_outcome to the database insert ---
       const { error: dbError } = await supabase
         .from('notes')
         .insert({
@@ -54,10 +46,8 @@ function UploadForm() {
           file_name: file.name,
           url: publicURL,
           note_type: noteType, 
-          // Only add course_outcome if it's Class Notes and has a value
           course_outcome: (noteType === 'Class Notes' && courseOutcome) ? courseOutcome : null 
         });
-      // --- END MODIFICATION ---
 
       if (dbError) throw dbError;
 
@@ -70,7 +60,6 @@ function UploadForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // --- MODIFIED: Add Course Outcome validation only if Class Notes is selected ---
     let validationError = false;
     if (noteType === 'Class Notes' && !courseOutcome) {
         validationError = true;
@@ -83,30 +72,33 @@ function UploadForm() {
       setUploadStatus({ progress: 0, messages: [errorMsg] });
       return;
     }
-    // --- END MODIFICATION ---
 
     setLoading(true);
-    setUploadStatus({ progress: 0, messages: [`Starting upload of ${files.length} files...`] });
+    // Clear previous messages before starting new upload
+    setUploadStatus({ progress: 0, messages: [`Starting upload of ${files.length} file(s)...`] }); 
 
     const results = [];
     for (let i = 0; i < files.length; i++) {
-        // ... (keep existing loop code) ...
         const file = files[i];
         const result = await uploadSingleFile(file);
         results.push(result);
+        // Update status incrementally
         setUploadStatus(prevStatus => ({
             progress: ((i + 1) / files.length) * 100,
-            messages: [...prevStatus.messages, `${result.fileName}: ${result.message}`]
+            // Add new message, keeping existing ones
+            messages: [...prevStatus.messages, `${result.fileName}: ${result.message}`] 
         }));
     }
 
+    // Reset form fields
     setFiles([]);
     if (document.getElementById('file-input')) document.getElementById('file-input').value = "";
     setYear('');
     setSubject('');
     setNoteType('Class Notes'); 
-    setCourseOutcome(''); // Reset course outcome
-    setLoading(false);
+    setCourseOutcome(''); 
+    setLoading(false); 
+    // Keep progress at 100, but allow status messages to show by setting loading to false
     setUploadStatus(prevStatus => ({ ...prevStatus, progress: 100 })); 
   };
 
@@ -124,13 +116,12 @@ function UploadForm() {
       
       <div>
         <label>Note Type: </label>
-        <select value={noteType} onChange={(e) => setNoteType(e.target.value)} required style={{/* Styles */}}>
+        <select value={noteType} onChange={(e) => setNoteType(e.target.value)} required style={{width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-primary)', color: 'var(--text-color)', fontSize: '1rem'}}>
           <option value="Class Notes">Class Notes</option>
           <option value="Lab Notes">Lab Notes</option>
         </select>
       </div>
 
-      {/* --- NEW INPUT for Course Outcome (Conditional) --- */}
       {noteType === 'Class Notes' && (
         <div>
           <label>Course Outcome (CO): </label>
@@ -139,26 +130,42 @@ function UploadForm() {
             value={courseOutcome} 
             onChange={(e) => setCourseOutcome(e.target.value)} 
             placeholder="e.g., CO1, CO2" 
-            required // Make it required only when shown
-            style={{/* Styles - copy from other inputs */}}
+            required 
+            style={{width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-primary)', color: 'var(--text-color)', fontSize: '1rem'}} // Added styles
           />
         </div>
       )}
-      {/* --- END NEW INPUT --- */}
 
       <div>
         <label>File(s) (PDF, PPT, PPTX): </label>
         <input id="file-input" type="file" onChange={handleFileChange} accept=".pdf,.ppt,.pptx" multiple required />
       </div>
       
-      {/* Progress Bar */}
-      {loading && ( <div style={{ marginTop: '1rem' }}> {/* ... */} </div> )}
+      {/* --- CORRECTED JSX FOR FEEDBACK --- */}
+      {/* Progress Bar - Show only during loading */}
+      {loading && (
+        <div style={{ marginTop: '1rem' }}>
+          <progress value={uploadStatus.progress} max="100" style={{ width: '100%' }} />
+          <p>{Math.round(uploadStatus.progress)}% Complete</p>
+        </div>
+      )}
 
-      {/* Upload Button */}
-      <button type="submit" disabled={loading} style={{ marginTop: '1rem' }}>{/* ... */}</button>
+      {/* Upload Button - Text changes based on loading state */}
+      <button type="submit" disabled={loading} style={{ marginTop: '1rem' }}>
+        {loading ? `Uploading ${files.length} file(s)...` : `Upload (${files.length > 0 ? files.length : 0} selected)`}
+      </button>
 
-      {/* Status Box */}
-      {uploadStatus.messages.length > 0 && !loading && ( <div style={{ marginTop: '1rem', /* ... */ }}> {/* ... */} </div> )}
+      {/* Status Box - Show final messages only AFTER loading is false */}
+      {uploadStatus.messages.length > 0 && !loading && ( 
+        <div style={{ marginTop: '1rem', maxHeight: '200px', overflowY: 'auto', border: '1px solid var(--border-color)', padding: '10px', borderRadius: '8px', backgroundColor: 'var(--bg-primary)' }}>
+          <h4>Upload Status:</h4>
+          {/* Skip the initial "Starting upload..." message */}
+          {uploadStatus.messages.slice(1).map((msg, index) => ( 
+            <p key={index} style={{ color: msg.includes('Error:') ? 'red' : 'inherit', fontSize: '0.9em', marginBottom: '0.2em' }}>{msg}</p>
+          ))}
+        </div>
+      )}
+      {/* --- END CORRECTION --- */}
     </form>
   );
 }
