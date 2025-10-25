@@ -1,0 +1,66 @@
+/* Reset and base styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* --------------------
+    1. CSS Variables (Theming)
+   -------------------- */
+:root {
+  /* DARK MODE (Default) */
+  --bg-primary: #121212; /* Main background */
+  --bg-secondary: #1e1e1e; /* Card, Navbar, Footer background */
+  --text-color: #e0e0e0; /* Main text */
+  --text-color-light: #aaa; /* Footer text */
+  --accent-color: #bb86fc; /* Purple (primary call-to-action) */
+  --accent-hover: #a06bf9; /* Purple hover */
+  --border-color: #333; /* Borders and lines */
+  --shadow-color: rgba(0, 0, 0, 0.3); /* Shadow for dark theme */
+}
+
+.light-mode {
+  /* LIGHT MODE */
+  --bg-primary: #ffffff; /* Main background */
+  --bg-secondary: #f0f0f0; /* Card, Navbar, Footer background */
+  --text-color: #1f1f1f; /* Main text */
+  --text-color-light: #555; /* Footer text */
+  --accent-color: #6200ee; /* Dark Purple */
+  --accent-hover: #3700b3; /* Dark Purple hover */
+  --border-color: #ccc; /* Borders and lines */
+  --shadow-color: rgba(0, 0, 0, 0.1); /* Shadow for light theme */
+}
+
+/* --------------------
+    2. Base Styles
+   -------------------- */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Use Variables Here */
+  background-color: var(--bg-primary);
+  color: var(--text-color);
+  line-height: 1.6;
+}
+
+/* Base link styles */
+a {
+  color: var(--accent-color);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--accent-hover);
+}
+
+/* Headings */
+h1, h2, h3 {
+  color: var(--text-color);
+  margin-bottom: 0.75rem;
+}
