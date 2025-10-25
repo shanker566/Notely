@@ -41,8 +41,19 @@ function ViewPage() {
       <Link to={`/notes/${note.year}/${note.subject}`} className="back-link">
         &larr; Back to {note.subject} Notes
       </Link>
-      <h2>{note.file_name}</h2>
       
+      {/* PROFESSIONAL HEADER WITH DOWNLOAD BUTTON */}
+      <div className="view-header">
+        <h2>{note.file_name}</h2>
+        
+        <a href={note.url} download={note.file_name}>
+            <button>
+                ⬇️ Download PDF
+            </button>
+        </a>
+      </div>
+      
+      {/* PDF Viewer Component */}
       <PDFViewer fileUrl={note.url} />
     </div>
   );
