@@ -78,14 +78,18 @@ function UploadForm() {
         <input
           type="text"
           value={subject}
-          // FIX: Corrected e.targe.value to e.target.value
           onChange={(e) => setSubject(e.target.value)}
           placeholder="e.g., Mathematics"
         />
       </div>
       <div>
-        <label>PDF File: </label>
-        <input type="file" onChange={handleFileChange} accept=".pdf" />
+        <label>File (PDF, PPT, PPTX): </label>
+        {/* MODIFIED: Update the accept attribute */}
+        <input 
+          type="file" 
+          onChange={handleFileChange} 
+          accept=".pdf,.ppt,.pptx" // <-- Allow PDF, PPT, and PPTX
+        />
       </div>
       <button type="submit" disabled={loading}>
         {loading ? 'Uploading...' : 'Upload'}

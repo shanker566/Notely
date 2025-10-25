@@ -1,27 +1,36 @@
 import React from 'react';
-import { Link } from 'react-router-dom'; // <-- 1. Make sure this is imported
+import { Link } from 'react-router-dom';
 
 function NoteCard({ note }) {
-  const cardStyle = {
-    border: '1px solid #ccc',
-    borderRadius: '8px',
-    padding: '1rem 1.5rem',
-    textDecoration: 'none',
-    color: '#007bff',
-    display: 'block',
-    fontWeight: 'bold',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
-  };
+  const isPdf = note.file_name.toLowerCase().endsWith('.pdf');
 
-  return (
-    // 2. This MUST be a <Link> component, not an <a> tag
-    <Link 
-      to={`/view/${note.id}`} // <-- 3. This links to your new viewer page
-      style={cardStyle}
-    >
-      {note.file_name}
-    </Link>
-  );
+  // Common styling
+  const cardStyle = "note-card"; // Use class from App.css
+
+  // If it's a PDF, link to the internal viewer page
+  if (isPdf) {
+    return (
+      <Link 
+        to={`/view/${note.id}`} 
+        className={cardStyle}
+      >
+        📄 {note.file_name} (View)
+      </Link>
+    );
+  } else {
+    // If it's not a PDF (PPT/PPTX), link directly to the file for download
+    return (
+      <a 
+        href={note.url} 
+        className={cardStyle}
+        target="_blank" // Open in new tab might trigger download
+        rel="noopener noreferrer"
+        download // Suggest downloading
+      >
+        📎 {note.file_name} (Download)
+      </a>
+    );
+  }
 }
 
 export default NoteCard;

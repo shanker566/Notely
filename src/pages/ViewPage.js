@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { supabase } from '../supabase/supabase';
-import PDFViewer from '../components/PDFViewer';
+import PDFViewer from '../components/PDFViewer'; // PDF Viewer component
 
 function ViewPage() {
   const [note, setNote] = useState(null);
@@ -36,25 +36,34 @@ function ViewPage() {
   if (error) return <h2 style={{ color: 'red' }}>{error}</h2>;
   if (!note) return <h2>Note not found.</h2>;
 
+  // Check if the file is a PDF
+  const isPdf = note.file_name.toLowerCase().endsWith('.pdf');
+
   return (
     <div className="page-wrapper">
       <Link to={`/notes/${note.year}/${note.subject}`} className="back-link">
         &larr; Back to {note.subject} Notes
       </Link>
       
-      {/* PROFESSIONAL HEADER WITH DOWNLOAD BUTTON */}
       <div className="view-header">
         <h2>{note.file_name}</h2>
-        
+        {/* Always show download button */}
         <a href={note.url} download={note.file_name}>
             <button>
-                ⬇️ Download PDF
+                ⬇️ Download File
             </button>
         </a>
       </div>
       
-      {/* PDF Viewer Component */}
-      <PDFViewer fileUrl={note.url} />
+      {/* Conditionally render the PDF Viewer */}
+      {isPdf ? (
+        <PDFViewer fileUrl={note.url} />
+      ) : (
+        <div style={{ marginTop: '2rem', padding: '1rem', border: '1px solid var(--border-color)', borderRadius: '8px', background: 'var(--bg-secondary)' }}>
+          <p>📄 Preview is only available for PDF files.</p>
+          <p>Please use the download button to save this file.</p>
+        </div>
+      )}
     </div>
   );
 }
