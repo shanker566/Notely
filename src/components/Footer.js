@@ -2,31 +2,38 @@ import React from 'react';
 import { Link } from 'react-router-dom'; // Use Link for internal navigation
 
 function Footer() {
-  const myEmail = "2400080042@kluniversity.in";
+  // Store emails separately
+  const primaryEmail = "2400080042@kluniversity.in";
+  const secondaryEmail = "2400030629@kluniversity.in";
+  
   const myLinkedIn = "https://www.linkedin.com/in/gowrishanker-bhonagiri-552362360";
-  // IMPORTANT: Replace this with your actual GitHub profile URL
-  const myGitHub = "https://github.com/shanker566"; 
+  const myGitHub = "https://github.com/shanker566"; // Corrected GitHub link
   const currentYear = new Date().getFullYear();
 
-  // Reusable style for links (keeping minimal inline styles for margin)
+  // Reusable style for links
   const linkMarginStyle = { margin: "0 5px" };
-  const separatorStyle = { margin: "0 10px", color: "var(--text-color-light)" }; // Use CSS variable
+  const separatorStyle = { margin: "0 10px", color: "var(--text-color-light)" };
 
   return (
-    <footer className="footer"> {/* Use class from App.css */}
+    <footer className="footer"> 
       
-      {/* Top section - Quick links (Using '#' for placeholders) */}
+      {/* Top section - Quick links */}
       <div className="footer-links" style={{ marginBottom: "10px" }}>
         <Link to="/" style={linkMarginStyle}>Home</Link> |
-        <a href="#" style={linkMarginStyle}>About</a> | {/* Placeholder */}
-        <a href="#" style={linkMarginStyle}>Projects</a> | {/* Placeholder */}
-        <a href="#" style={linkMarginStyle}>Contact</a> {/* Placeholder */}
+        <a href="#" style={linkMarginStyle}>About</a> | 
+        <a href="#" style={linkMarginStyle}>Projects</a> | 
+        <a href="#" style={linkMarginStyle}>Contact</a> 
       </div>
 
       {/* Middle section - Contact info */}
       <div className="footer-contact" style={{ marginBottom: "10px" }}>
         <span>
-          ✉️ <a href={`mailto:${myEmail}`} target="_blank" rel="noopener noreferrer" style={linkMarginStyle}>{myEmail}</a>
+          ✉️ 
+          {/* Link primarily to the first email, display both */}
+          <a href={`mailto:${primaryEmail}`} target="_blank" rel="noopener noreferrer" style={linkMarginStyle}>
+            {primaryEmail}
+          </a> 
+          {secondaryEmail && `, ${secondaryEmail}`} {/* Display second email if it exists */}
         </span>
         <span style={separatorStyle}>|</span>
         <span>
@@ -46,11 +53,9 @@ function Footer() {
       {/* Legal + Year */}
       <p className="footer-legal">
         &copy; {currentYear} Notely App. All rights reserved to owner. | 
-        <a href="#" style={linkMarginStyle}> Privacy Policy</a> | {/* Placeholder */}
-        <a href="#" style={linkMarginStyle}> Terms of Use</a> {/* Placeholder */}
+        <a href="#" style={linkMarginStyle}> Privacy Policy</a> | 
+        <a href="#" style={linkMarginStyle}> Terms of Use</a> 
       </p>
-
-      {/* Removed "Back to Top" for simplicity for now */}
       
     </footer>
   );
