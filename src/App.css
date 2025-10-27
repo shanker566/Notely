@@ -115,7 +115,7 @@
 
 .note-card:hover {
     border-color: var(--accent-color);
-    background-color: #2a2a2a; /* Slightly darker hover */
+    background-color: #2a2a2a; /* Slightly darker hover for dark mode */
 }
 
 /* ---- Back Link ---- */
@@ -162,7 +162,7 @@ button:hover {
 }
 
 button:disabled {
-    background-color: #444;
+    background-color: #444; /* Use a variable or adjust for light mode if needed */
     color: #888;
     cursor: not-allowed;
 }
@@ -186,7 +186,10 @@ button:disabled {
 }
 
 .upload-form input[type="text"],
-.upload-form input[type="file"] {
+.upload-form input[type="file"],
+.upload-form select, /* Add select styling */
+.pdf-navigation input[type="number"] /* Style page input */
+{
     width: 100%;
     padding: 10px;
     border-radius: 8px;
@@ -206,23 +209,26 @@ button:disabled {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
+    flex-wrap: wrap; /* Allow wrapping on small screens */
+    gap: 10px; /* Add gap for wrapping */
 }
 
 .view-header h2 {
     margin: 0;
+    flex-grow: 1; /* Allow title to take available space */
 }
 
-/* ---- PDF Viewer Navigation ---- */
-.pdf-viewer-container div button {
-  margin: 0 5px; /* Add slight horizontal margin to buttons */
-}
+/* ---- PDF Viewer Navigation (OLD - REMOVE) ---- */
+/* .pdf-viewer-container div button {
+  margin: 0 5px; 
+} */
 
 /* ---- Enhanced Footer Styles ---- */
 .footer-links a,
 .footer-contact a,
 .footer-legal a {
   /* Use accent color for links, respecting theme */
-  color: var(--accent-color); 
+  color: var(--accent-color);
   text-decoration: none;
   transition: color 0.2s ease;
 }
@@ -241,11 +247,60 @@ button:disabled {
 .footer-tagline {
   font-size: 0.85rem;
   /* Use main text color from theme */
-  color: var(--text-color); 
+  color: var(--text-color);
 }
 
 .footer-legal {
   font-size: 0.75rem;
   /* Use lighter text color from theme */
-  color: var(--text-color-light); 
+  color: var(--text-color-light);
+}
+
+/* ---- PDF Viewer Navigation (Enhanced) ---- */
+.pdf-navigation {
+  margin-top: 1rem;
+  display: flex; /* Use flexbox for alignment */
+  justify-content: center; /* Center items horizontally */
+  align-items: center; /* Align items vertically */
+  gap: 10px; /* Space between elements */
+  flex-wrap: wrap; /* Allow wrapping */
+}
+
+.pdf-navigation span {
+  /* Style for the "Page X of Y" text */
+  font-weight: 500;
+  margin: 0 5px; /* Adjust margin */
+  white-space: nowrap; /* Prevent text wrapping */
+}
+
+.pdf-navigation input[type="number"] {
+  /* Basic styling for the input - Inherits from general input styles */
+  padding: 8px;
+  width: 70px;
+  text-align: center; /* Center the number */
+  /* Remove default spinner arrows on some browsers */
+  -moz-appearance: textfield;
+}
+.pdf-navigation input[type="number"]::-webkit-outer-spin-button,
+.pdf-navigation input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.pdf-navigation form {
+    display: flex; /* Align input and button */
+    align-items: center;
+    gap: 5px;
+}
+
+.pdf-navigation form button {
+    padding: 8px 15px; /* Slightly smaller button */
+    font-size: 0.9rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .pdf-navigation {
+    gap: 15px; /* Increase gap slightly when wrapped */
+  }
 }
